@@ -272,6 +272,7 @@ export const Combobox = forwardRefWithAs<ComboboxProps, "div">(
     {
       onSelect,
       openOnFocus = false,
+      keepOpenOnClear = false,
       children,
       as: Comp = "div",
       "aria-label": ariaLabel,
@@ -330,6 +331,7 @@ export const Combobox = forwardRefWithAs<ComboboxProps, "div">(
       listboxId,
       onSelect: onSelect || noop,
       openOnFocus,
+      keepOpenOnClear,
       persistSelectionRef,
       popoverRef,
       state,
@@ -380,6 +382,10 @@ export type ComboboxProps = {
    */
   openOnFocus?: boolean;
   /**
+   * If true, the popover will remain open when input is cleared.
+   */
+  keepOpenOnClear?: boolean;
+  /**
    * Defines a string value that labels the current element.
    * @see Docs https://reach.tech/combobox#accessibility
    */
@@ -397,6 +403,7 @@ if (__DEV__) {
     as: PropTypes.any,
     onSelect: PropTypes.func,
     openOnFocus: PropTypes.bool,
+    keepOpenOnClear: PropTypes.bool,
   };
 }
 
@@ -440,6 +447,7 @@ export const ComboboxInput = forwardRefWithAs<ComboboxInputProps, "input">(
       listboxId,
       autocompletePropRef,
       openOnFocus,
+      keepOpenOnClear,
       isExpanded,
       ariaLabel,
       ariaLabelledby,
@@ -466,7 +474,7 @@ export const ComboboxInput = forwardRefWithAs<ComboboxInputProps, "input">(
 
     const handleValueChange = useCallback(
       (value: ComboboxValue) => {
-        if (value.trim() === "") {
+        if (value.trim() === "" && !keepOpenOnClear) {
           transition(CLEAR);
         } else if (
           value === initialControlledValue &&
@@ -1248,6 +1256,7 @@ interface InternalComboboxContextValue {
   listboxId: string;
   onSelect(value?: ComboboxValue): any;
   openOnFocus: boolean;
+  keepOpenOnClear: boolean;
   persistSelectionRef: React.MutableRefObject<any>;
   popoverRef: React.MutableRefObject<any>;
   state: State;
